@@ -11,7 +11,6 @@ namespace SRC.Cleaner
         {
             string logsFolder = Path.Combine(Program.RobloxDirectory, "logs");
             string webviewFolder = Path.Combine(Program.RobloxDirectory, "UniversalApp", "WebView2", "EBWebView");
-
             var deleteList = new List<(string DirectoryPath, string FileFormats)>
             {
                 (logsFolder, "*.log"), // Logs
@@ -20,6 +19,7 @@ namespace SRC.Cleaner
                 (Path.Combine(webviewFolder, "GrShaderCache"), "*.*"),
                 (Path.Combine(webviewFolder, "ShaderCache"), "*.*")
             };
+
             Stopwatch cleanTime = Stopwatch.StartNew();
             await DeleteFileType(deleteList);
             cleanTime.Stop();
