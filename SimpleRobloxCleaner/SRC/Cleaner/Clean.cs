@@ -19,6 +19,15 @@ namespace SRC.Cleaner
                 (Path.Combine(webviewFolder, "GrShaderCache"), "*.*"),
                 (Path.Combine(webviewFolder, "ShaderCache"), "*.*")
             };
+            if (Program.AppState.DeleteRiskyFiles)
+            {
+                var riskyFilesList = new List<(string DirectoryPath, string FileFormats)>
+                {
+                    (Path.Combine(Program.RobloxDirectory, "Versions"), "RobloxPlayerInstaller.exe"),
+                };
+
+                deleteList.AddRange(riskyFilesList);
+            }
 
             Stopwatch cleanTime = Stopwatch.StartNew();
             await DeleteFileType(deleteList);

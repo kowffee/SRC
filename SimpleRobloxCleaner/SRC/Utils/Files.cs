@@ -40,11 +40,11 @@ namespace SRC.Utils
                                     try
                                     {
                                         File.Delete(file);
-                                        Print($"Deleted: {file}", Yellow);
+                                        Print($"Deleted: {file}", Yellow, true);
                                     }
                                     catch (Exception ex)
                                     {
-                                        Print($"Error deleting file {file}: {ex.Message}", Red);
+                                        Print($"Error deleting file {file}: {ex.Message}", Red, true);
                                     }
                                 });
                             });
@@ -59,6 +59,69 @@ namespace SRC.Utils
             catch (Exception ex)
             {
                 Print($"An unexpected error occurred: {ex.Message}", Red);
+            }
+        }
+
+        public static async Task<string> GetOptionValue(string file, string key)
+        {
+            if (!File.Exists(file))
+                return "N/A";
+
+            using (var sr = new StreamReader(file))
+            {
+                string line;
+                while ((line = await sr.ReadLineAsync()) != null)
+                {
+                    if (line.StartsWith(key))
+                    {
+                        string[] parts = line.Split(':');
+                        return parts.Length > 1 ? parts[1] : "N/A";
+                    }
+                }
+            }
+
+            return "N/A";
+        }
+
+        public static async Task<bool> SetOptionValue<T>(string file, string key, T value)
+        {
+            try
+            {
+                if (!File.Exists(file))
+                    return false;
+
+                string[] lines = File.ReadAllLines(file);
+                bool keyFound = false;
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (lines[i].StartsWith(key))
+                    {
+                        lines[i] = $"{key}:{value}";
+                        keyFound = true;
+                        break;
+                    }
+                }
+
+                if (!keyFound)
+                {
+                    Array.Resize(ref lines, lines.Length + 1);
+                    lines[lines.Length - 1] = $"{key}:{value}";
+                }
+
+                using (var sw = new StreamWriter(file))
+                {
+                    foreach (var line in lines)
+                    {
+                        await sw.WriteLineAsync(line);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }
