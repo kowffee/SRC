@@ -9,6 +9,7 @@ namespace SRC.Cleaner
     {
         internal static async Task CleanAll()
         {
+            string localTempAppDataCache = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp", "Roblox");
             string logsFolder = Path.Combine(Program.RobloxDirectory, "logs");
             string webviewFolder = Path.Combine(Program.RobloxDirectory, "UniversalApp", "WebView2", "EBWebView");
 
@@ -38,6 +39,7 @@ namespace SRC.Cleaner
 
             Stopwatch cleanTime = Stopwatch.StartNew();
             await DeleteFileType(deleteList);
+            await DeleteSubfolders(localTempAppDataCache);
             cleanTime.Stop();
             Print(cleanTime.Elapsed.TotalSeconds < 1 ? $"Finished in {cleanTime.Elapsed.Milliseconds}ms" : $"Finished in {cleanTime.Elapsed.Seconds}s", Yellow);
         }

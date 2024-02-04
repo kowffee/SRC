@@ -124,5 +124,46 @@ namespace SRC.Utils
                 return false;
             }
         }
+
+        public static async Task DeleteSubfolders(string directoryPath)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Print($"Directory does not exist: {directoryPath}", Red);
+                        return;
+                    }
+
+                    try
+                    {
+                        var subfolders = Directory.EnumerateDirectories(directoryPath);
+
+                        Parallel.ForEach(subfolders, subfolder =>
+                        {
+                            try
+                            {
+                                Directory.Delete(subfolder, true);
+                                Print($"Deleted sub-folder: {subfolder}", DarkYellow, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                Print($"Error deleting sub-folder {subfolder}: {ex.Message}", Red, true);
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Print($"An error occurred while processing sub-folders in directory {directoryPath}: {ex.Message}", Red);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Print($"An unexpected error occurred: {ex.Message}", Red);
+            }
+        }
     }
 }
